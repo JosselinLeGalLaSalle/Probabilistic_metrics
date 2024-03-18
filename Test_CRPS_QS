@@ -1,0 +1,403 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "50b83f4e-21b7-48ec-b529-146f3c3addeb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# -*- coding: utf-8 -*-\n",
+    "\"\"\"\n",
+    "Created on Tue Aug 8 16:13:33 2023\n",
+    "\n",
+    "@author: jianfan\n",
+    "\"\"\"\n",
+    "\n",
+    "\n",
+    "# -*- coding: utf-8 -*-\n",
+    "\"\"\"\n",
+    "Created on Wed Feb  8 16:17:51 2023\n",
+    "\n",
+    "@author: jlegalla\n",
+    "\"\"\"\n",
+    "\n",
+    "# -*- coding: utf-8 -*-\n",
+    "\"\"\"\n",
+    "Created on Wed Nov  2 20:37:20 2022\n",
+    "@author: r.amaro_e_silva\n",
+    "\"\"\"\n",
+    "\n",
+    "import os\n",
+    "import pandas as pd\n",
+    "from utils import read_observation_data, build_cdf, CRPS_classic, CRPS_Brier,quantile_score_decomposition,CRPS_QS_score\n",
+    "import numpy as np\n",
+    "import timeit"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "306979dc-e64b-45e8-bdc8-77777909a9eb",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "------------CAR------------\n",
+      "obs read: check\n",
+      "fc read: check\n",
+      "CRPS1 78.87506714280234 \n",
+      "\n",
+      "Duration calculated with Classic: 7.88034179999886 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:319: RuntimeWarning: invalid value encountered in divide\n",
+      "  o=prob_ix[:, 0] / l\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS2 78.87701790208784 \n",
+      " REL_BR 15.289890430305356 \n",
+      " UNC_BR 156.79725527210053 \n",
+      " -RES_BR -93.21012780031799\n",
+      "Duration calculated for Brier decomp: 14.267362900001899 seconds\n",
+      "CRPS3 78.90760311696165 \n",
+      " REL_CRPS_QS 9.582648669108787 \n",
+      " UNC_CRPS_QS 156.74336151101036 \n",
+      " -RES_QS -87.4185394887214\n",
+      "Duration calculated for QS decomp: 80.02728610000122 seconds\n",
+      "------------CAB------------\n",
+      "obs read: check\n",
+      "fc read: check\n",
+      "CRPS1 89.0350019739881 \n",
+      "\n",
+      "Duration calculated with Classic: 6.665040300002147 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:319: RuntimeWarning: invalid value encountered in divide\n",
+      "  o=prob_ix[:, 0] / l\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS2 89.04396213227595 \n",
+      " REL_BR 19.08594156908871 \n",
+      " UNC_BR 147.09342102062016 \n",
+      " -RES_BR -77.13540045743288\n",
+      "Duration calculated for Brier decomp: 12.530310599999211 seconds\n",
+      "CRPS3 89.06712425877623 \n",
+      " REL_CRPS_QS 14.620572888816866 \n",
+      " UNC_CRPS_QS 147.04193840235135 \n",
+      " -RES_QS -72.60555017838205\n",
+      "Duration calculated for QS decomp: 75.64650110000002 seconds\n",
+      "------------CEN------------\n",
+      "obs read: check\n",
+      "fc read: check\n",
+      "CRPS1 86.01809248583778 \n",
+      "\n",
+      "Duration calculated with Classic: 8.12773549999838 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:319: RuntimeWarning: invalid value encountered in divide\n",
+      "  o=prob_ix[:, 0] / l\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS2 86.01066995304916 \n",
+      " REL_BR 11.865166610737338 \n",
+      " UNC_BR 149.17987893519577 \n",
+      " -RES_BR -75.03437559288389\n",
+      "Duration calculated for Brier decomp: 15.327037299997755 seconds\n",
+      "CRPS3 86.04581526620015 \n",
+      " REL_CRPS_QS 6.726865606553016 \n",
+      " UNC_CRPS_QS 149.13329261900336 \n",
+      " -RES_QS -69.82139405527911\n",
+      "Duration calculated for QS decomp: 84.39759020000201 seconds\n",
+      "------------MIL------------\n",
+      "obs read: check\n",
+      "fc read: check\n",
+      "CRPS1 86.20285632860981 \n",
+      "\n",
+      "Duration calculated with Classic: 7.604420399999071 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:319: RuntimeWarning: invalid value encountered in divide\n",
+      "  o=prob_ix[:, 0] / l\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS2 86.19049279404976 \n",
+      " REL_BR 16.081641861464835 \n",
+      " UNC_BR 156.79744309887337 \n",
+      " -RES_BR -86.68859216628839\n",
+      "Duration calculated for Brier decomp: 14.569466100001591 seconds\n",
+      "CRPS3 86.24382983077493 \n",
+      " REL_CRPS_QS 10.27723058062847 \n",
+      " UNC_CRPS_QS 156.76493786248153 \n",
+      " -RES_QS -80.8039982053907\n",
+      "Duration calculated for QS decomp: 79.58517189999839 seconds\n",
+      "------------PAL------------\n",
+      "obs read: check\n",
+      "fc read: check\n",
+      "CRPS1 88.35547887356444 \n",
+      "\n",
+      "Duration calculated with Classic: 7.46987000000081 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:319: RuntimeWarning: invalid value encountered in divide\n",
+      "  o=prob_ix[:, 0] / l\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS2 88.35349595407834 \n",
+      " REL_BR 16.89856311078852 \n",
+      " UNC_BR 147.58899904524074 \n",
+      " -RES_BR -76.13406620195082\n",
+      "Duration calculated for Brier decomp: 14.764615500000218 seconds\n",
+      "CRPS3 88.40011860797651 \n",
+      " REL_CRPS_QS 11.773322470172763 \n",
+      " UNC_CRPS_QS 147.54988845700998 \n",
+      " -RES_QS -70.93267531595389\n",
+      "Duration calculated for QS decomp: 81.5478578000002 seconds\n",
+      "------------PAY------------\n",
+      "obs read: check\n",
+      "fc read: check\n",
+      "CRPS1 93.79237219526289 \n",
+      "\n",
+      "Duration calculated with Classic: 7.805171500000142 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:319: RuntimeWarning: invalid value encountered in divide\n",
+      "  o=prob_ix[:, 0] / l\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS2 93.79051699939455 \n",
+      " REL_BR 15.571788740812186 \n",
+      " UNC_BR 154.61228024310134 \n",
+      " -RES_BR -76.39355198451908\n",
+      "Duration calculated for Brier decomp: 14.296104599998216 seconds\n",
+      "CRPS3 93.83606107951363 \n",
+      " REL_CRPS_QS 10.232631311981997 \n",
+      " UNC_CRPS_QS 154.5756311526476 \n",
+      " -RES_QS -70.98334066930414\n",
+      "Duration calculated for QS decomp: 81.86560079999981 seconds\n",
+      "------------TAB------------\n",
+      "obs read: check\n",
+      "fc read: check\n",
+      "CRPS1 62.72852114689443 \n",
+      "\n",
+      "Duration calculated with Classic: 9.115376900001138 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:319: RuntimeWarning: invalid value encountered in divide\n",
+      "  o=prob_ix[:, 0] / l\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS2 62.74018039309199 \n",
+      " REL_BR 9.057628268142253 \n",
+      " UNC_BR 144.47618722494332 \n",
+      " -RES_BR -90.79363509999351\n",
+      "Duration calculated for Brier decomp: 16.611930200000643 seconds\n",
+      "CRPS3 62.73434646493634 \n",
+      " REL_CRPS_QS 3.3002982725506698 \n",
+      " UNC_CRPS_QS 144.40215295344225 \n",
+      " -RES_QS -84.96377791448532\n",
+      "Duration calculated for QS decomp: 87.8976152000032 seconds\n",
+      "------------TOR------------\n",
+      "obs read: check\n",
+      "fc read: check\n",
+      "CRPS1 78.84846791811256 \n",
+      "\n",
+      "Duration calculated with Classic: 3.8701088999987405 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:319: RuntimeWarning: invalid value encountered in divide\n",
+      "  o=prob_ix[:, 0] / l\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS2 78.87444210989734 \n",
+      " REL_BR 16.967228547331597 \n",
+      " UNC_BR 131.8839852555232 \n",
+      " -RES_BR -69.97677169295763\n",
+      "Duration calculated for Brier decomp: 8.628495199998724 seconds\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:407: RuntimeWarning: Mean of empty slice\n",
+      "  x=np.nanmean(x)*np.ones(len(x))\n",
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:417: RuntimeWarning: Mean of empty slice\n",
+      "  res[i] = np.nanmean(check_loss(xa, q_climato * np.ones(len(xa))) - check_loss(xa, qi * np.ones(len(xa))))\n",
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:418: RuntimeWarning: Mean of empty slice\n",
+      "  rel[i] = np.nanmean(check_loss(xa, x) - check_loss(xa, qi *np.ones(len(xa))))\n",
+      "C:\\Users\\fjiang\\A_CRPS_file\\utils.py:419: RuntimeWarning: Mean of empty slice\n",
+      "  u[i] = np.nanmean(check_loss(xa, q_climato * np.ones(len(xa))))\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "CRPS3 78.87980887568605 \n",
+      " REL_CRPS_QS 11.97150507675195 \n",
+      " UNC_CRPS_QS 131.79373991833654 \n",
+      " -RES_QS -64.91214767460195\n",
+      "Duration calculated for QS decomp: 67.16831290000118 seconds\n"
+     ]
+    }
+   ],
+   "source": [
+    "for site in ['CAR', 'CAB', 'CEN', 'MIL','PAL', 'PAY', 'TAB', 'TOR']:\n",
+    "    print('------------' + site + '------------')\n",
+    "\n",
+    "    # observations\n",
+    "    dir_ = os.path.join('observations', site + '_camsRad_2018_2020.csv')\n",
+    "\n",
+    "    obs, ix_qc = read_observation_data(dir_, time_col='time', datetime_format='%Y-%m-%d %H:%M:%S')\n",
+    "\n",
+    "    print('obs read: check')\n",
+    "\n",
+    "    ix_filter = obs.index.year == 2020\n",
+    "    obs = obs.loc[ix_filter]\n",
+    "    ix_qc = ix_qc[ix_filter]\n",
+    "    del (ix_filter)\n",
+    "\n",
+    "    # TODO: consider calculating CHPeEn internally\n",
+    "    # forecasts, for now seen as ensemble (i.e, no quantile associated)\n",
+    "    dir_ = os.path.join('forecasts','fcghi_' + site + '_CHPeEnv2_2020.csv')#'..', 'data',  \n",
+    "    fc_eps = pd.read_csv(dir_)\n",
+    "    print('fc read: check')\n",
+    "\n",
+    "    # TODO: consider having short and complete versions of cdfs\n",
+    "    # (first with only stepping points, second with regular steps)\n",
+    "    cdf_method = 'classic'\n",
+    "    fc_cdf, ix_qc2 = \\\n",
+    "        build_cdf(fc_eps, cdf_method, ix_qc, min_ensemble_size=730)\n",
+    "\n",
+    "    start1 = timeit.default_timer()\n",
+    "    CRPS1 = CRPS_classic(obs, fc_cdf, ix_qc2)\n",
+    "    print('CRPS1',np.nanmean(CRPS_classic(obs, fc_cdf, ix_qc2)),'\\n')\n",
+    "    end1 = timeit.default_timer()\n",
+    "    print(f\"Duration calculated with Classic: {end1 - start1} seconds\")\n",
+    "    \n",
+    "    start2 = timeit.default_timer()\n",
+    "    CRPS2,REL_BR,RES_BR,UNC_BR = CRPS_Brier(obs, fc_cdf, integ_step=8, ix_qc=ix_qc2)\n",
+    "    end2 = timeit.default_timer()\n",
+    "    print('CRPS2',CRPS2,'\\n','REL_BR',REL_BR,'\\n','UNC_BR',UNC_BR,'\\n','-RES_BR',-RES_BR)\n",
+    "    print(f\"Duration calculated for Brier decomp: {end2 - start2} seconds\")\n",
+    "    \n",
+    "    \n",
+    "    start3 = timeit.default_timer()\n",
+    "    CRPS3,rel_crps,res_crps,u_crps=CRPS_QS_score(obs, fc_cdf, ix_qc2,200)#\n",
+    "    print('CRPS3', CRPS3,'\\n','REL_CRPS_QS',rel_crps,'\\n','UNC_CRPS_QS',u_crps,'\\n','-RES_QS',-res_crps)#\n",
+    "    end3 = timeit.default_timer()\n",
+    "    print(f\"Duration calculated for QS decomp: {end3 - start3} seconds\")\n",
+    "    \n",
+    "    #start1 = timeit.default_timer()\n",
+    "    #QS_verif_e100=QS_verfi(obs,fc_cdf, ix_qc2)\n",
+    "    #print('QS_verif_e100',QS_verif_e100,'\\n')\n",
+    "    #end1 = timeit.default_timer()\n",
+    "    #print(f\"Duration calculated for decomp: {end1 - start1} seconds\")\n",
+    "    \n",
+    "    #start = timeit.default_timer()\n",
+    "    #qs_500, res_500, rel_500, u_500=quantile_score_decomposition(fc_cdf['prob'][500],fc_cdf['GHI'][ix_qc2][:,500],obs['ghi'][ix_qc2])#\n",
+    "    #print('qs_500',qs_500,'\\n',' rel_500', rel_500,'\\n','u_500',u_500,'\\n','res_500',-res_500)\n",
+    "    ##TIMING code ici\n",
+    "    #end = timeit.default_timer()\n",
+    "    #print(f\"Duration calculated for decomp: {end - start} seconds\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "45780435-fed1-41f6-a4e1-0a93c8153c34",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.9"
+  },
+  "toc-autonumbering": true
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
